@@ -3,6 +3,7 @@ package kr.co.hs.app.progressactivity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,11 @@ import kr.co.hs.app.progressactivity.animation.HsExpandWeightAnimation;
 /**
  * Created by Bae on 2017-01-02.
  */
-public abstract class HsExpandLayoutActivity extends HsActivity implements HsExpandWeightAnimation.OnExpandAnimationListener {
+public abstract class HsExpandLayoutActivity extends HsActivity implements IHsExpandLayout, HsExpandWeightAnimation.OnExpandAnimationListener {
 
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
+    private TabLayout mTabLayout;
     private LinearLayout mLayoutTop;
     private LinearLayout mLayoutContents;
 
@@ -35,6 +37,7 @@ public abstract class HsExpandLayoutActivity extends HsActivity implements HsExp
 
         mToolbar = (Toolbar) findViewById(R.id.Toolbar);
         mAppBarLayout = (AppBarLayout) findViewById(R.id.AppBarLayout);
+        mTabLayout = (TabLayout) findViewById(R.id.TabLayout);
 
         if(mToolbar != null)
             setSupportActionBar(mToolbar);
@@ -53,46 +56,58 @@ public abstract class HsExpandLayoutActivity extends HsActivity implements HsExp
 //        setWeight(500, 300);
     }
 
-    protected void setContentBottomLayout(int layout){
+    public Toolbar getToolbar(){
+        return  mToolbar;
+    }
+
+    public void setContentBottomLayout(int layout){
+        mLayoutContents.removeAllViews();
         View view = LayoutInflater.from(getContext()).inflate(layout, null);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mLayoutContents.addView(view, params);
     }
 
-    protected void setContentTopLayout(int layout){
+    public void setContentTopLayout(int layout){
+        mLayoutTop.removeAllViews();
         View view = LayoutInflater.from(getContext()).inflate(layout, null);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         mLayoutTop.addView(view, params);
     }
 
-    protected void onCreateTop(@Nullable Bundle savedInstanceState, LinearLayout layoutTop){
+    public void onCreateTop(@Nullable Bundle savedInstanceState, LinearLayout layoutTop){
 
     }
 
-    protected void onCreateBottom(@Nullable Bundle savedInstanceState, LinearLayout layoutBottom){
+    public void onCreateBottom(@Nullable Bundle savedInstanceState, LinearLayout layoutBottom){
 
     }
 
-    protected void setWeight(int top, int content){
+    protected TabLayout getTabLayout(){
+        if(mTabLayout != null && mTabLayout.getVisibility() == View.GONE)
+            mTabLayout.setVisibility(View.VISIBLE);
+        return mTabLayout;
+    }
+
+    public void setWeight(int top, int content){
         setTopWeight(top);
         setContentWeight(content);
     }
 
-    protected int getCurrentTopWeight(){
+    public int getCurrentTopWeight(){
         return topWeight;
     }
 
-    protected int getCurrentBottomWeight(){
+    public int getCurrentBottomWeight(){
         return contentsWeight;
     }
 
-    protected void setTopWeightWithAnimation(int requestCode, int toWeight){
+    public void setTopWeightWithAnimation(int requestCode, int toWeight){
         mExpandWeightAnimation.setAnimation(requestCode, getCurrentTopWeight(), toWeight);
         this.topWeight = toWeight;
         mLayoutTop.startAnimation(mExpandWeightAnimation);
     }
 
-    protected void setTopWeightWithAnimation(int requestCode, int toWeight, long duration){
+    public void setTopWeightWithAnimation(int requestCode, int toWeight, long duration){
         mExpandWeightAnimation.setAnimation(requestCode, getCurrentTopWeight(), toWeight);
         mExpandWeightAnimation.setDuration(duration);
         this.topWeight = toWeight;
@@ -107,5 +122,13 @@ public abstract class HsExpandLayoutActivity extends HsActivity implements HsExp
     private void setContentWeight(int weight){
         mLayoutContents.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, weight));
         this.contentsWeight = weight;
+    }
+
+    protected LinearLayout getLayoutTop(){
+        return this.mLayoutTop;
+    }
+
+    protected LinearLayout getLayoutContents(){
+        return this.mLayoutContents;
     }
 }

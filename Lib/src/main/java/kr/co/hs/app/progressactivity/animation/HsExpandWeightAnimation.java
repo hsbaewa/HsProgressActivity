@@ -5,6 +5,8 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.LinearLayout;
 
+import kr.co.hs.util.Logger;
+
 /**
  * Created by Bae on 2017-01-03.
  */
@@ -16,6 +18,7 @@ public class HsExpandWeightAnimation extends Animation {
     private OnExpandAnimationListener mOnExpandAnimationListener;
     private float currentInterpolatedTime = 1;
     private int requestCode = 0;
+    private boolean isAnimating = false;
 
     public HsExpandWeightAnimation(View content, float startWeight, float endWeight) {
         this.mContent = content;
@@ -30,14 +33,19 @@ public class HsExpandWeightAnimation extends Animation {
     @Override
     protected void applyTransformation(float interpolatedTime, Transformation t) {
         LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) mContent.getLayoutParams();
-        lp.weight = (mStartWeight + (mDeltaWeight * interpolatedTime));
+        float f = mStartWeight + (mDeltaWeight * interpolatedTime);
+//        Logger.d("applyTransformation", "interpolatedTime : "+interpolatedTime);
+        Logger.d("applyTransformation", "start : "+mStartWeight+", delta : "+mDeltaWeight+", interpoatedTime : "+interpolatedTime);
+        lp.weight = f;
         mContent.setLayoutParams(lp);
         if(currentInterpolatedTime != interpolatedTime){
             currentInterpolatedTime = interpolatedTime;
             if(this.mOnExpandAnimationListener != null){
                 if(currentInterpolatedTime == 0){
+                    isAnimating = true;
                     this.mOnExpandAnimationListener.onResultAnimation(requestCode, OnExpandAnimationListener.RESULT_START);
                 }else if(currentInterpolatedTime == 1){
+                    isAnimating = false;
                     this.mOnExpandAnimationListener.onResultAnimation(requestCode, OnExpandAnimationListener.RESULT_FINISH);
                 }
             }
@@ -48,6 +56,10 @@ public class HsExpandWeightAnimation extends Animation {
         this.requestCode = requestCode;
         this.mStartWeight = startWeight;
         this.mDeltaWeight = endWeight - startWeight;
+    }
+
+    public boolean isAnimating() {
+        return isAnimating;
     }
 
     @Override
