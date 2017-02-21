@@ -25,5 +25,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.github.hsbaewa:HsCircularProgressBar:0.0.3'
-    compile 'com.github.hsbaewa:HsCommon:+'
+    compile 'com.github.hsbaewa:HsCommon:0.0.31'
 }
